@@ -1,26 +1,16 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
-import AdminHome from "./pages/AdminHome";
-import UserHome from "./pages/UserHome";
-import { isAuthenticated, getUser } from "./utils/auth";
+import Dashboard from "./pages/Dashboard";
+import Condominios from "./pages/Condominios";
+import Unidades from "./pages/Unidades";
+import Cobrancas from "./pages/Cobrancas";
+import Inadimplencia from "./pages/Inadimplencia";
+import Acordos from "./pages/Acordos";
+import { isAuthenticated } from "./utils/auth";
 
 function PrivateRoute({ children }) {
   if (!isAuthenticated()) {
     return <Navigate to="/" />;
-  }
-
-  return children;
-}
-
-function AdminRoute({ children }) {
-  const user = getUser();
-
-  if (!isAuthenticated()) {
-    return <Navigate to="/" />;
-  }
-
-  if (user?.tipo !== "ADMIN" && user?.is_superuser !== true) {
-    return <Navigate to="/user/home" />;
   }
 
   return children;
@@ -33,22 +23,61 @@ export default function App() {
         <Route path="/" element={<Login />} />
 
         <Route
-          path="/admin/home"
+          path="/dashboard"
           element={
-            <AdminRoute>
-              <AdminHome />
-            </AdminRoute>
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/dashboard" />} />
+
+        <Route
+          path="/condominios"
+          element={
+            <PrivateRoute>
+              <Condominios />
+            </PrivateRoute>
           }
         />
 
         <Route
-          path="/user/home"
+          path="/unidades"
           element={
             <PrivateRoute>
-              <UserHome />
+              <Unidades />
             </PrivateRoute>
           }
         />
+
+        <Route
+          path="/cobrancas"
+          element={
+            <PrivateRoute>
+              <Cobrancas />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/inadimplencia"
+          element={
+            <PrivateRoute>
+              <Inadimplencia />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/acordos"
+          element={
+            <PrivateRoute>
+              <Acordos />
+            </PrivateRoute>
+          }
+        />
+
       </Routes>
     </BrowserRouter>
   );

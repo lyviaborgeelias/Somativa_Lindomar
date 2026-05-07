@@ -51,9 +51,9 @@ export default function Login() {
             saveAuth(access, refresh, user);
 
             if (user.tipo === "ADMIN" || user.is_superuser === true) {
-                navigate("/admin/home");
+                navigate("/dashboard");
             } else {
-                navigate("/user/home");
+                navigate("/dashboard");
             }
         } catch (err) {
             console.log(err);
