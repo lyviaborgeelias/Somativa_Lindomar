@@ -166,6 +166,13 @@ class CobrancaViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(cobrancas, many=True)
         return Response(serializer.data)
 
+    def perform_update(self, serializer):
+        cobranca = serializer.save()
+
+        if hasattr(cobranca, 'parcela_acordo'):
+            parcela = cobranca.parcela_acordo
+            parcela.status = cobranca.status
+            parcela.save()
 
 class AcordoViewSet(viewsets.ModelViewSet):
     queryset = Acordo.objects.prefetch_related(

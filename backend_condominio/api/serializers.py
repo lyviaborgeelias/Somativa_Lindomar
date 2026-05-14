@@ -112,8 +112,11 @@ class CobrancaSerializer(serializers.ModelSerializer):
             'forma_pagamento',
             'multa',
             'juros',
+            'acordo',
+            'numero_parcela_acordo',
         ]
-        read_only_fields = ['multa', 'juros']
+
+        read_only_fields = ['multa', 'juros', 'acordo', 'numero_parcela_acordo']
 
     def validate(self, data):
         status = data.get('status')
@@ -223,10 +226,23 @@ class AcordoSerializer(serializers.ModelSerializer):
         valor_parcela = valor_total / quantidade_parcelas
 
         for numero in range(1, quantidade_parcelas + 1):
+            vencimento = acordo.data_criacao + timedelta(days=30 * numero)
+
+            cobranca_parcela = Cobranca.objects.create(
+                unidade=acordo.unidade,
+                competencia=acordo.data_criacao.replace(day=1),
+                data_vencimento=vencimento,
+                valor=valor_parcela,
+                status='PENDENTE',
+                acordo=acordo,
+                numero_parcela_acordo=numero
+            )
+
             ParcelaAcordo.objects.create(
                 acordo=acordo,
+                cobranca=cobranca_parcela,
                 numero_parcela=numero,
-                data_vencimento=acordo.data_criacao + timedelta(days=30 * numero),
+                data_vencimento=vencimento,
                 valor=valor_parcela,
                 status='PENDENTE'
             )

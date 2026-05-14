@@ -87,6 +87,15 @@ class Cobranca(models.Model):
     def __str__(self):
         return f'{self.unidade} - {self.competencia}'
 
+    acordo = models.ForeignKey(
+        'Acordo',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='cobrancas_geradas'
+    )
+
+    numero_parcela_acordo = models.PositiveIntegerField(blank=True, null=True)
 
 class Acordo(models.Model):
     unidade = models.ForeignKey(Unidade, on_delete=models.CASCADE, related_name='acordos')
@@ -101,10 +110,19 @@ class Acordo(models.Model):
 
 class ParcelaAcordo(models.Model):
     STATUS_CHOICES = [
-        ('PENDENTE', 'Pendente'),
-        ('PAGO', 'Pago'),
-        ('VENCIDO', 'Vencido'),
+    ('PENDENTE', 'Pendente'),
+    ('PAGO', 'Pago'),
+    ('VENCIDO', 'Vencido'),
+    ('CANCELADO', 'Cancelado'),
     ]
+
+    cobranca = models.OneToOneField(
+        Cobranca,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='parcela_acordo'
+    )
 
     acordo = models.ForeignKey(Acordo, on_delete=models.CASCADE, related_name='parcelas')
     numero_parcela = models.PositiveIntegerField()
